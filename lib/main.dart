@@ -149,50 +149,53 @@ class _GiftPickerHomePageState extends State<GiftPickerHomePage> {
               child: ListView.builder(
                 itemCount: people.length,
                 itemBuilder: (context, index) {
-                  return OutlinedButton(
-                    onPressed: () {}, // Optional: Füge eine Funktion hinzu, falls gewünscht
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all(EdgeInsets.all(8)),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Name der Person
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              people[index].name,
-                              style: Theme.of(context).textTheme.titleLarge, // titleLarge
-                              overflow: TextOverflow.ellipsis,
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0), // Abstand zwischen den Einträgen
+                    child: OutlinedButton(
+                      onPressed: () {}, // Optional: Füge eine Funktion hinzu, falls gewünscht
+                      style: ButtonStyle(
+                        padding: MaterialStateProperty.all(EdgeInsets.all(8)),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Name der Person
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                people[index].name,
+                                style: Theme.of(context).textTheme.titleLarge, // titleLarge
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
 
-                          // Minus-Button
-                          IconButton(
-                            icon: Icon(Icons.remove),
-                            onPressed: () => _decrementGiftCount(people[index]),
-                          ),
+                            // Minus-Button
+                            IconButton(
+                              icon: Icon(Icons.remove),
+                              onPressed: () => _decrementGiftCount(people[index]),
+                            ),
 
-                          // Anzahl der Geschenke
-                          Text(
-                            '${people[index].giftCount}', // Zeigt die Anzahl der Geschenke
-                            style: Theme.of(context).textTheme.bodyLarge, // bodyLarge
-                          ),
+                            // Anzahl der Geschenke
+                            Text(
+                              '${people[index].giftCount}', // Zeigt die Anzahl der Geschenke
+                              style: Theme.of(context).textTheme.bodyLarge, // bodyLarge
+                            ),
 
-                          // Plus-Button
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () => _incrementGiftCount(people[index]),
-                          ),
+                            // Plus-Button
+                            IconButton(
+                              icon: Icon(Icons.add),
+                              onPressed: () => _incrementGiftCount(people[index]),
+                            ),
 
-                          // Entfernen-Button
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () => _removePerson(people[index]),
-                          ),
-                        ],
+                            // Entfernen-Button
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () => _removePerson(people[index]),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
@@ -202,31 +205,31 @@ class _GiftPickerHomePageState extends State<GiftPickerHomePage> {
           ],
         ),
       ),
-    floatingActionButton: FloatingActionButton(
-    onPressed: () {
-    if (people.isNotEmpty) {
-    Person selectedPerson = _pickRandomPerson();
-    Navigator.push(
-    context,
-    MaterialPageRoute(
-    builder: (context) => GiftPickerResultPage(
-    person: selectedPerson,
-    onGiftDecrement: () {
-    setState(() {
-    selectedPerson.giftCount--;
-    });
-    },
-    ),
-    ),
-    );
-    }
-    },
-    backgroundColor: Theme.of(context).colorScheme.primary, // FAB Hintergrundfarbe
-    child: Icon(
-    Icons.card_giftcard,
-    color: Colors.white, // Setzt die Farbe des Icons auf weiß (oder jede andere Farbe)
-    ),
-    ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (people.isNotEmpty) {
+            Person selectedPerson = _pickRandomPerson();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => GiftPickerResultPage(
+                  person: selectedPerson,
+                  onGiftDecrement: () {
+                    setState(() {
+                      selectedPerson.giftCount--; // Hier wird die Anzahl der Geschenke verringert
+                    });
+                  },
+                ),
+              ),
+            );
+          }
+        },
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: Icon(
+          Icons.card_giftcard,
+          color: Colors.white, // Setzt das Icon auf weiß, damit es sich abhebt
+        ),
+      ),
     );
   }
 }
@@ -235,25 +238,44 @@ class GiftPickerResultPage extends StatelessWidget {
   final Person person;
   final VoidCallback onGiftDecrement;
 
-  GiftPickerResultPage({required this.person, required this.onGiftDecrement});
+  GiftPickerResultPage({
+    required this.person,
+    required this.onGiftDecrement,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Ausgewählte Person'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '${person.name}',
-              style: Theme.of(context).textTheme.displayLarge,
-            ),
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        onGiftDecrement(); // Aufrufen des Callbacks wenn der Zurück-Button gedrückt wird
+        return true; // Signalisiert, dass die Seite geschlossen werden kann
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Gewählte Person'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '${person.name}',
+                style: Theme.of(context).textTheme.titleLarge, // titleLarge statt headline5
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  onGiftDecrement(); // Aufrufen des Callbacks bei OK-Button
+                  Navigator.pop(context); // Zurück zur Hauptseite
+                },
+                child: Text('OK'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+
