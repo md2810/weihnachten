@@ -1,16 +1,8 @@
 # weihnachten
 
-A new Flutter project.
+A simple multi-platform Flutter app for deciding randomly who should get their presents.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Usage
+Simply count the presents for a person and enter the number into the app.
+Repeat this step for every person.
+Click the "gift" button in the lower right corner to randomly choose a person to open their gift next.
